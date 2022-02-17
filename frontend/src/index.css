@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.form-bg {
+  background: url('https://www.nasa.gov/sites/default/files/thumbnails/image/background_01.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
