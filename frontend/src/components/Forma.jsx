@@ -1,10 +1,46 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
 
 const Forma = () => {
+  const [formData, setFormData] = useState({
+    ime: '',
+    slika: '',
+    email: '',
+    rodendan: '',
+  })
+
+  const [mobitel, setMobitel] = useState()
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
   const navigate = useNavigate()
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    navigate('/kalendar')
+
+    if (
+      !formData.email ||
+      !formData.ime ||
+      !formData.slika ||
+      !formData.rodendan
+    ) {
+      toast.error('Molimo popunite sva polja.')
+      return
+    }
+
+    formData.mobitel = mobitel
+
+    console.log(formData)
+
+    // navigate('/kalendar')
   }
   return (
     <div className='h-screen font-sans bg-cover form-bg'>
@@ -26,9 +62,10 @@ const Forma = () => {
                 <input
                   className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
                   type='text'
-                  id='ime'
+                  name='ime'
                   placeholder='Upišite ime'
-                  required
+                  value={formData.ime}
+                  onChange={handleChange}
                 />
               </div>
               <div className='mt-2'>
@@ -39,7 +76,8 @@ const Forma = () => {
                   id='slika'
                   name='slika'
                   placeholder='Upišite url profilne slike'
-                  required
+                  value={formData.slika}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -51,7 +89,8 @@ const Forma = () => {
                   id='email'
                   name='email'
                   placeholder='Upišite email'
-                  required
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
 
@@ -63,19 +102,19 @@ const Forma = () => {
                   id='rodendan'
                   name='rodendan'
                   placeholder='Upišite datum rođendana'
-                  required
+                  value={formData.rodendan}
+                  onChange={handleChange}
                 />
               </div>
 
               <div className='mt-2'>
                 <label className='block text-sm text-white'>Mobitel</label>
-                <input
+                <PhoneInput
+                  defaultCountry='BA'
                   className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
-                  type='tel'
-                  id='mobitel'
-                  name='mobitel'
                   placeholder='Upišite broj mobitela'
-                  required
+                  value={mobitel}
+                  onChange={setMobitel}
                 />
               </div>
 
