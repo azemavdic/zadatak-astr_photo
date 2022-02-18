@@ -1,18 +1,23 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { Provider } from 'react-redux'
+import { store } from './app/store'
 import Home from './pages/Home'
-import Kalendar from './pages/Kalendar'
+import KalendarPage from './pages/KalendarPage'
+import 'react-toastify/dist/ReactToastify.css'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/kalendar' element={<Kalendar />} />
-      </Routes>
-      <ToastContainer />
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/kalendar' element={<KalendarPage />} />
+        </Routes>
+        <ToastContainer />
+      </Router>
+    </Provider>
   )
 }
 
