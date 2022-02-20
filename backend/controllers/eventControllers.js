@@ -22,10 +22,10 @@ const getEvents = asyncHandler(async (req, res) => {
 //@route /api/events
 //nivo Javno
 const addEvent = asyncHandler(async (req, res) => {
-  const { ime, email, start, thumbnail } = req.body
+  const { ime, email, start, thumbnail, mobitel } = req.body
 
   //Validacija
-  if (!ime || !email || !start || !thumbnail) {
+  if (!ime || !email || !start || !thumbnail || !mobitel) {
     res.status(400).json({ poruka: 'Molimo upišite sva polja' })
     return
   }
@@ -64,4 +64,22 @@ const izbrisiEvent = asyncHandler(async (req, res) => {
   }
 })
 
-module.exports = { getEvents, addEvent, izbrisiEvent }
+//opis Edituj event
+//@route /api/events/:id
+//nivo Javno
+const updateEvent = asyncHandler(async (req, res) => {
+  const { id } = req.params
+  try {
+    const event = await Event.findById(id)
+    if (!event) {
+      res.status(404).json({ poruka: 'Nema evenata.' })
+      return
+    }
+    await Event.findByIdAndUpdate(id, req.body, { new: true })
+    res.status(200).json({ poruka: `Uspješno editovan korisnik ${event.ime}` })
+  } catch (error) {
+    res.status(401).json({ error })
+  }
+})
+
+module.exports = { getEvents, addEvent, izbrisiEvent, updateEvent }
