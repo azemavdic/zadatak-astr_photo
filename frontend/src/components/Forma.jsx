@@ -3,29 +3,33 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
-import { useDispatch } from 'react-redux'
-import { dodajEvent } from '../features/eventsSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { dodajEvent, editujEvent, isEditing } from '../features/eventsSlice'
 import { add } from 'date-fns'
 import { showModalForma } from '../features/modalSlice'
 import { format } from 'date-fns'
+import { v4 as uuidv4 } from 'uuid'
+import Datepicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
-const Forma = ({ modalForma }) => {
+const Forma = ({ modalForma, editItem, setEditItem }) => {
+  const [rodendan, setRodendan] = useState(null)
   const [formData, setFormData] = useState({
     ime: '',
     slika: 'https://i.pravatar.cc/300',
     email: '',
-    rodendan: '',
+    // rodendan: '',
   })
 
   const [mobitel, setMobitel] = useState()
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const editMode = useSelector((state) => state.event.editMode)
 
-  const godina =
-    new Date().getFullYear() - new Date(formData.rodendan).getFullYear()
+  const godina = new Date().getFullYear() - new Date(rodendan).getFullYear()
 
-  const startEnd = add(new Date(formData.rodendan), { years: godina })
+  const startEnd = add(new Date(rodendan), { years: godina })
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -34,20 +38,22 @@ const Forma = ({ modalForma }) => {
     }))
   }
 
+  const handleChangeEdit = (e) => {
+    setEditItem((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    if (
-      !formData.email ||
-      !formData.ime ||
-      !formData.rodendan ||
-      !formData.slika
-    ) {
+    if (!formData.email || !formData.ime || !rodendan || !formData.slika) {
       toast.error('Molimo popunite sva polja.')
       return
     }
 
-    if (formData.rodendan > format(new Date(), 'yyyy-MM-dd')) {
+    if (rodendan > format(new Date(), 'yyyy-MM-dd')) {
       toast.error('Datum rođenja ne može biti veći od današnjeg datuma.')
       return
     }
@@ -56,6 +62,7 @@ const Forma = ({ modalForma }) => {
 
     dispatch(
       dodajEvent({
+        id: uuidv4(),
         start: startEnd,
         end: startEnd,
         ime: formData.ime,
@@ -65,17 +72,64 @@ const Forma = ({ modalForma }) => {
       })
     )
     if (modalForma === 'da') {
+      // dispatch(showModalForma(false))
+      // toast.success('Uspješno dodano!')
+    } else {
+      // navigate('/kalendar')
+      console.log(startEnd)
+    }
+  }
+
+  const handleSubmitEdit = (e) => {
+    e.preventDefault()
+
+    if (
+      !editItem.email ||
+      !editItem.ime ||
+      !editItem.start ||
+      !editItem.thumbnail
+    ) {
+      toast.error('Molimo popunite sva polja.')
+      return
+    }
+
+    if (formData.start > format(new Date(), 'yyyy-MM-dd')) {
+      toast.error('Datum rođenja ne može biti veći od današnjeg datuma.')
+      return
+    }
+
+    editItem.mobitel = mobitel
+
+    dispatch(
+      editujEvent({
+        id: editItem.id,
+        start: editItem.startEnd,
+        end: editItem.startEnd,
+        ime: editItem.ime,
+        godine: editItem.godina,
+        email: editItem.email,
+        thumbnail: editItem.slika,
+      })
+    )
+    if (modalForma === 'da') {
       dispatch(showModalForma(false))
-      toast.success('Uspješno dodano!')
+      dispatch(isEditing(false))
+      toast.success('Uspješno ispravljeno!')
     } else {
       navigate('/kalendar')
     }
   }
+
+  const handleCloseModal = () => {
+    dispatch(showModalForma(false))
+    dispatch(isEditing(false))
+  }
+
   return (
-    <div className='w-full max-w-lg relative'>
+    <div className='relative w-full max-w-lg'>
       {modalForma === 'da' && (
         <button
-          onClick={() => dispatch(showModalForma(false))}
+          onClick={handleCloseModal}
           className='absolute btn btn-xs -top-3 right-1'
         >
           x
@@ -83,11 +137,11 @@ const Forma = ({ modalForma }) => {
       )}
       <div className='leading-loose'>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={editMode ? handleSubmitEdit : handleSubmit}
           className='max-w-sm p-10 m-4 bg-white bg-opacity-25 rounded shadow-xl'
         >
           <p className='text-lg font-medium text-center text-white'>
-            ISPUNITE FORMU
+            {editMode ? 'ISPRAVI UNOS' : 'DODAJ KORISNIKA'}
           </p>
 
           <div className='mt-2'>
@@ -99,8 +153,8 @@ const Forma = ({ modalForma }) => {
               type='text'
               name='ime'
               placeholder='Upišite ime'
-              value={formData.ime}
-              onChange={handleChange}
+              value={editMode ? editItem.ime : formData.ime}
+              onChange={editMode ? handleChangeEdit : handleChange}
             />
           </div>
           <div className='mt-2'>
@@ -111,8 +165,8 @@ const Forma = ({ modalForma }) => {
               id='slika'
               name='slika'
               placeholder='Upišite url profilne slike'
-              value={formData.slika}
-              onChange={handleChange}
+              value={editMode ? editItem.thumbnail : formData.slika}
+              onChange={editMode ? handleChangeEdit : handleChange}
             />
           </div>
 
@@ -124,21 +178,23 @@ const Forma = ({ modalForma }) => {
               id='email'
               name='email'
               placeholder='Upišite email'
-              value={formData.email}
-              onChange={handleChange}
+              value={editMode ? editItem.email : formData.email}
+              onChange={editMode ? handleChangeEdit : handleChange}
             />
           </div>
 
           <div className='mt-2'>
             <label className='block text-sm text-white'>Datum rođenja</label>
-            <input
+            <Datepicker
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
-              type='date'
-              id='rodendan'
               name='rodendan'
               placeholder='Upišite datum rođenja'
-              value={formData.rodendan}
-              onChange={handleChange}
+              selected={editMode ? editItem.start : rodendan}
+              onChange={(date) => setRodendan(date)}
+              maxDate={new Date()}
+              showYearDropdown
+              scrollableYearDropdown
+              dateFormat='dd.MM.yyyy'
             />
           </div>
 
@@ -148,7 +204,7 @@ const Forma = ({ modalForma }) => {
               defaultCountry='BA'
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               placeholder='Upišite broj mobitela'
-              value={mobitel}
+              value={editMode ? editItem.mobitel : mobitel}
               onChange={setMobitel}
             />
           </div>
@@ -159,7 +215,7 @@ const Forma = ({ modalForma }) => {
               type='submit'
               // disabled={loading}
             >
-              Potvrdi
+              {editMode ? 'Edituj' : 'Potvrdi'}
             </button>
           </div>
           {/* {greska && <span className='text-red-400'>{greska}</span>} */}

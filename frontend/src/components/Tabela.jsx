@@ -1,12 +1,13 @@
 import { useSelector, useDispatch } from 'react-redux'
 import format from 'date-fns/format'
 import { BsFillTrashFill, BsFillPencilFill } from 'react-icons/bs'
-import { izbrisiEvent } from '../features/eventsSlice'
+import { isEditing, izbrisiEvent } from '../features/eventsSlice'
 import withReactContent from 'sweetalert2-react-content'
 import Swal from 'sweetalert2'
 import { showModalForma } from '../features/modalSlice'
 import Modal from 'react-modal'
 import Forma from './Forma'
+import { useState } from 'react'
 
 Modal.setAppElement('#root')
 
@@ -34,6 +35,8 @@ export const customStyles = {
 }
 
 const Tabela = () => {
+  const [editItem, setEditItem] = useState({})
+
   const korisnici = useSelector((state) => state.event.value)
   const dispatch = useDispatch()
   const modalIsOpen = useSelector((state) => state.modal.modalForma)
@@ -56,6 +59,13 @@ const Tabela = () => {
       Swal.fire('Korisnik nije obrisan.', '', 'info')
     }
   }
+
+  const handleEdit = (id) => {
+    setEditItem(korisnici.find((korisnik) => korisnik.id === id))
+    dispatch(showModalForma(true))
+    dispatch(isEditing(true))
+  }
+
   return (
     <div className='lg:px-10 mb-6'>
       <div className='flex items-center justify-between'>
@@ -103,7 +113,7 @@ const Tabela = () => {
                   <td className='space-x-2 px-4'>
                     <button
                       className='btn btn-info btn-sm'
-                      // onClick={() => handleEditClick(racun._id)}
+                      onClick={() => handleEdit(korisnik.id)}
                     >
                       <BsFillPencilFill />
                     </button>
@@ -135,7 +145,7 @@ const Tabela = () => {
         style={customStyles}
         contentLabel='Example Modal'
       >
-        <Forma modalForma='da' />
+        <Forma modalForma='da' editItem={editItem} setEditItem={setEditItem} />
       </Modal>
     </div>
   )
