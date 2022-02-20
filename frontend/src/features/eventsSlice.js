@@ -31,6 +31,7 @@ export const eventsSlice = createSlice({
         event.godine = payload.godine
         event.thumbnail = payload.thumbnail
         event.mobitel = payload.mobitel
+        event.rodendan = payload.rodendan
       }
     },
   },

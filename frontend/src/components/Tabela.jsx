@@ -111,7 +111,7 @@ const Tabela = () => {
                   </td>
                   <td className='px-4'>{korisnik.ime}</td>
                   <td className='px-4'>{korisnik.email}</td>
-                  <td className='px-4 space-x-2'>
+                  <td className='flex items-center justify-center h-full p-4 space-x-2'>
                     <button
                       className='btn btn-info btn-sm'
                       onClick={() => handleEdit(korisnik.id)}

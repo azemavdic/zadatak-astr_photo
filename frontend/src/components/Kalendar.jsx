@@ -106,7 +106,7 @@ const Kalendar = () => {
         style={customStyles}
         contentLabel='Example Modal'
       >
-        <div className='relative '>
+        <div className='relative h-96 lg:h-auto'>
           <div className='flex flex-col items-center justify-center'>
             {isLoading ? (
               <p>Loading...</p>
@@ -123,7 +123,7 @@ const Kalendar = () => {
                   <img
                     src={modalData.url}
                     alt=''
-                    className='w-1/3 aspect-square'
+                    className='w-2/3 lg:w-1/3 aspect-square'
                   />
                 ) : (
                   <iframe

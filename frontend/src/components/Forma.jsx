@@ -55,6 +55,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    //Validacija forme
     if (!formData.email || !formData.ime || !rodendan || !formData.slika) {
       toast.error('Molimo popunite sva polja.')
       return
@@ -77,7 +78,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
         email: formData.email,
         thumbnail: formData.slika,
         mobitel: formData.mobitel,
-        datumRodjenja: rodendan,
+        rodendan: rodendan,
       })
     )
     if (modalForma === 'da') {
@@ -116,10 +117,11 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
         start: startEndEdit,
         end: startEndEdit,
         ime: editItem.ime,
-        godine: editItem.godina,
+        godine: godinaEdit,
         email: editItem.email,
         thumbnail: editItem.thumbnail,
         mobitel: editItem.mobitel,
+        rodendan: editItem.rodendan,
       })
     )
     if (modalForma === 'da') {
@@ -200,10 +202,14 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               name='rodendan'
               placeholderText='dan.mjesec.godina'
-              selected={editMode ? editItem.datumRodjenja : rodendan}
+              selected={editMode ? editItem.rodendan : rodendan}
               onChange={(date) =>
                 editMode
-                  ? setEditItem((prev) => ({ ...prev, datumRodjenja: date }))
+                  ? setEditItem((prev) => ({
+                      ...prev,
+                      rodendan: date,
+                      start: date,
+                    }))
                   : setRodendan(date)
               }
               maxDate={new Date()}
