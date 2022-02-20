@@ -31,9 +31,6 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
   const startEnd = add(new Date(rodendan), { years: godina })
 
   //Edit postojećeg korisnika u formu za datum rođenja
-  const godinaEdit =
-    new Date().getFullYear() - new Date(editItem.start).getFullYear()
-  const startEndEdit = add(new Date(editItem.start), { years: godinaEdit })
 
   //On change za novog korisnika
   const handleChange = (e) => {
@@ -93,6 +90,10 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
   //Edit postojećeg korisnika
   const handleSubmitEdit = (e) => {
     e.preventDefault()
+
+    const godinaEdit =
+      new Date().getFullYear() - new Date(editItem.rodendan).getFullYear()
+    const startEndEdit = add(new Date(editItem.rodendan), { years: godinaEdit })
 
     if (
       !editItem.email ||
