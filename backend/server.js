@@ -4,6 +4,7 @@ const { errorHandler } = require('./middleware/errorMiddleware')
 const dotenv = require('dotenv').config()
 const colors = require('colors')
 const connectDB = require('./config/db')
+const cors = require('cors')
 
 const PORT = process.env.PORT
 
@@ -12,6 +13,7 @@ connectDB()
 
 const app = express()
 
+app.use(cors())
 //Body parser middleware
 app.use(express.json())
 //URL encoded

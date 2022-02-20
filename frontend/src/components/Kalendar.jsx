@@ -9,6 +9,7 @@ import { useState } from 'react'
 import sub from 'date-fns/sub'
 import Modal from 'react-modal'
 import { showModal } from '../features/modalSlice'
+import { useSviEventiQuery } from '../features/api'
 
 // KALENDAR
 const locales = {
@@ -55,19 +56,19 @@ const Kalendar = () => {
   const dispatch = useDispatch()
   const modalIsOpen = useSelector((state) => state.modal.modal)
 
-  const events = useSelector((state) => state.event.value)
+  const { data } = useSviEventiQuery()
 
+  //Otvaranje modala i pregled slike sa API-ja
   const handleSelectEvent = async (e) => {
     setIsLoading(true)
     let date
-    date = format(e.start, 'yyyy-MM-dd')
+    date = format(new Date(e.start), 'yyyy-MM-dd')
     const currentDate = format(new Date(), 'yyyy-MM-dd')
     if (date > currentDate) {
       const oduzetaGodina = sub(e.start, { years: 1 })
       date = format(oduzetaGodina, 'yyyy-MM-dd')
     } else {
-      date = format(e.start, 'yyyy-MM-dd')
-      console.log(date)
+      date = format(new Date(e.start), 'yyyy-MM-dd')
     }
     dispatch(showModal(true))
     try {
@@ -92,7 +93,7 @@ const Kalendar = () => {
         onSelectEvent={handleSelectEvent}
         defaultView='month'
         localizer={localizer}
-        events={events}
+        events={data?.events}
         views={['month']}
         startAccessor='start'
         endAccessor='end'

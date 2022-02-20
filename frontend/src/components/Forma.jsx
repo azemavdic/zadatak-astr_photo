@@ -4,13 +4,13 @@ import { toast } from 'react-toastify'
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
 import { useDispatch, useSelector } from 'react-redux'
-import { dodajEvent, editujEvent, isEditing } from '../features/eventsSlice'
+import { editujEvent, isEditing } from '../features/eventsSlice'
 import { add } from 'date-fns'
 import { showModalForma } from '../features/modalSlice'
 import { format } from 'date-fns'
-import { v4 as uuidv4 } from 'uuid'
 import Datepicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { useDodajEventMutation, useEditEventMutation } from '../features/api'
 
 const Forma = ({ modalForma, editItem, setEditItem }) => {
   const [rodendan, setRodendan] = useState(null)
@@ -48,12 +48,24 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
     }))
   }
 
+  const [dodajEvent] = useDodajEventMutation()
+  const [updateEvent] = useEditEventMutation({
+    fixedCacheKey: 'shared-update-post',
+  })
+
   //Dodaj novog korisnika
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
+    formData.mobitel = mobitel
     //Validacija forme
-    if (!formData.email || !formData.ime || !rodendan || !formData.slika) {
+    if (
+      !formData.email ||
+      !formData.ime ||
+      !rodendan ||
+      !formData.slika ||
+      !mobitel
+    ) {
       toast.error('Molimo popunite sva polja.')
       return
     }
@@ -63,11 +75,9 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
       return
     }
 
-    formData.mobitel = mobitel
-
-    dispatch(
-      dodajEvent({
-        id: uuidv4(),
+    try {
+      // RTK dodavanje u bazu podataka
+      await dodajEvent({
         start: startEnd,
         end: startEnd,
         ime: formData.ime,
@@ -77,18 +87,20 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
         mobitel: formData.mobitel,
         rodendan: rodendan,
       })
-    )
+      console.log(rodendan)
+    } catch (error) {
+      console.log('greska', error)
+    }
     if (modalForma === 'da') {
       dispatch(showModalForma(false))
       toast.success('Uspješno dodano!')
     } else {
       navigate('/kalendar')
-      console.log(startEnd)
     }
   }
 
   //Edit postojećeg korisnika
-  const handleSubmitEdit = (e) => {
+  const handleSubmitEdit = async (e) => {
     e.preventDefault()
 
     const godinaEdit =
@@ -125,6 +137,17 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
         rodendan: editItem.rodendan,
       })
     )
+    await updateEvent({
+      id: editItem._id,
+      start: startEndEdit,
+      end: startEndEdit,
+      ime: editItem.ime,
+      godine: godinaEdit,
+      email: editItem.email,
+      thumbnail: editItem.thumbnail,
+      mobitel: editItem.mobitel,
+      rodendan: editItem.rodendan,
+    })
     if (modalForma === 'da') {
       dispatch(isEditing(false))
       dispatch(showModalForma(false))
@@ -167,7 +190,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               type='text'
               name='ime'
               placeholder='Upišite ime'
-              value={editMode ? editItem.ime : formData.ime}
+              value={editMode ? editItem?.ime : formData.ime}
               onChange={editMode ? handleChangeEdit : handleChange}
             />
           </div>
@@ -179,7 +202,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               id='slika'
               name='slika'
               placeholder='Upišite url profilne slike'
-              value={editMode ? editItem.thumbnail : formData.slika}
+              value={editMode ? editItem?.thumbnail : formData.slika}
               onChange={editMode ? handleChangeEdit : handleChange}
             />
           </div>
@@ -192,7 +215,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               id='email'
               name='email'
               placeholder='Upišite email'
-              value={editMode ? editItem.email : formData.email}
+              value={editMode ? editItem?.email : formData.email}
               onChange={editMode ? handleChangeEdit : handleChange}
             />
           </div>
@@ -203,7 +226,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               name='rodendan'
               placeholderText='dan.mjesec.godina'
-              selected={editMode ? editItem.rodendan : rodendan}
+              selected={editMode ? '' : rodendan}
               onChange={(date) =>
                 editMode
                   ? setEditItem((prev) => ({
@@ -226,7 +249,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               defaultCountry='BA'
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               placeholder='Upišite broj mobitela'
-              value={editMode ? editItem.mobitel : mobitel}
+              value={editMode ? editItem?.mobitel : mobitel}
               onChange={setMobitel}
             />
           </div>

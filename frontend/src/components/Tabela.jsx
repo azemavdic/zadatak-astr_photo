@@ -1,13 +1,11 @@
 import { useSelector, useDispatch } from 'react-redux'
-import format from 'date-fns/format'
-import { BsFillTrashFill, BsFillPencilFill } from 'react-icons/bs'
-import { isEditing, izbrisiEvent } from '../features/eventsSlice'
-import withReactContent from 'sweetalert2-react-content'
-import Swal from 'sweetalert2'
+
 import { showModalForma } from '../features/modalSlice'
 import Modal from 'react-modal'
 import Forma from './Forma'
 import { useState } from 'react'
+import { useSviEventiQuery } from '../features/api'
+import TabelaRow from './TabelaRow'
 
 Modal.setAppElement('#root')
 
@@ -37,35 +35,10 @@ export const customStyles = {
 const Tabela = () => {
   const [editItem, setEditItem] = useState({})
 
-  const korisnici = useSelector((state) => state.event.value)
   const dispatch = useDispatch()
   const modalIsOpen = useSelector((state) => state.modal.modalForma)
-
-  const handleDelete = async (id) => {
-    const MySwal = withReactContent(Swal)
-    const confirm = await MySwal.fire({
-      title: 'Jeste li sigurni?',
-      text: 'Želite obrisati korisnika?',
-      icon: 'warning',
-      showDenyButton: true,
-      confirmButtonText: 'Da',
-      denyButtonText: 'Ne',
-      customClass: { htmlContainer: 'grid-row:1' },
-    })
-    if (confirm.isConfirmed) {
-      Swal.fire('Korisnik obrisan!', '', 'success')
-      dispatch(izbrisiEvent(id))
-    } else {
-      Swal.fire('Korisnik nije obrisan.', '', 'info')
-    }
-  }
-
-  const handleEdit = (id) => {
-    setEditItem(korisnici.find((korisnik) => korisnik.id === id))
-    // setEditItemRodendan(ko)
-    dispatch(showModalForma(true))
-    dispatch(isEditing(true))
-  }
+  //Get korisnici iz baze
+  const { data: korisnici, isLoading: loadingEvents } = useSviEventiQuery()
 
   return (
     <div className='mb-6 lg:px-10'>
@@ -73,7 +46,7 @@ const Tabela = () => {
         <h2 className='mx-3 mb-3 text-lg font-bold text-center lg:text-2xl'>
           Rođendani u ovoj godini
         </h2>
-        {korisnici.length > 0 && (
+        {korisnici && korisnici?.events.length > 0 && (
           <button
             className='mx-3 mb-3 btn btn-sm lg:btn-md lg:mx-0'
             onClick={() => dispatch(showModalForma(true))}
@@ -83,7 +56,8 @@ const Tabela = () => {
         )}
       </div>
       <div className='overflow-x-auto'>
-        {korisnici.length > 0 ? (
+        {loadingEvents && 'Loading...'}
+        {korisnici && korisnici?.events.length > 0 ? (
           <table className='w-full'>
             <thead className='border-b-2'>
               <tr>
@@ -96,37 +70,14 @@ const Tabela = () => {
               </tr>
             </thead>
             <tbody className='text-center'>
-              {korisnici.map((korisnik, i) => (
-                <tr key={i} className='border-b-[1px]'>
-                  <td className='px-4'>{i + 1}</td>
-                  <td className='px-4'>
-                    {format(korisnik.start, 'dd.MM.yyyy')}
-                  </td>
-                  <td className=''>
-                    <img
-                      src={korisnik.thumbnail}
-                      alt={korisnik.ime}
-                      className='w-12 rounded-md avatar'
-                    />
-                  </td>
-                  <td className='px-4'>{korisnik.ime}</td>
-                  <td className='px-4'>{korisnik.email}</td>
-                  <td className='flex items-center justify-center h-full p-4 space-x-2'>
-                    <button
-                      className='btn btn-info btn-sm'
-                      onClick={() => handleEdit(korisnik.id)}
-                    >
-                      <BsFillPencilFill />
-                    </button>
-                    <button
-                      className='btn btn-error btn-sm'
-                      onClick={() => handleDelete(korisnik.id)}
-                    >
-                      <BsFillTrashFill />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {korisnici &&
+                korisnici?.events.map((korisnik, i) => (
+                  <TabelaRow
+                    korisnik={korisnik}
+                    i={i}
+                    setEditItem={setEditItem}
+                  />
+                ))}
             </tbody>
           </table>
         ) : (

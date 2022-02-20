@@ -1,34 +1,11 @@
+import { useSviEventiQuery } from '../features/api'
+
 const EventComponent = ({ event }) => {
-  // const godine = () => {
-  //   switch (event.godine) {
-  //     case 2:
-  //       return 'godine'
-  //     case 3:
-  //       return 'godine'
-  //     case 4:
-  //       return 'godine'
-  //     case 22:
-  //       return 'godine'
-  //     case 23:
-  //       return 'godine'
-  //     case 24:
-  //       return 'godine'
-  //     case 32:
-  //       return 'godine'
-  //     case 33:
-  //       return 'godine'
-  //     case 34:
-  //       return 'godine'
-  //     case 42:
-  //       return 'godine'
-  //     case 43:
-  //       return 'godine'
-  //     case 44:
-  //       return 'godine'
-  //     default:
-  //       return 'godina'
-  //   }
-  // }
+  // const { korisnik } = useSviEventiQuery(undefined, {
+  //   selectFromResult: ({ data }) => ({
+  //     event: data.find((ev) => ev._id === event._id),
+  //   }),
+  // })
 
   return (
     <div className='flex items-center space-x-3'>
