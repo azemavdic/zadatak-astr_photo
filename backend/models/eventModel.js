@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 
-const eventModel = mongoose.Schema(
+const eventSchema = mongoose.Schema(
   {
     ime: { type: String, required: true },
     start: { type: String, required: true },
     end: { type: String },
-    godine: { type: String, required: true },
-    email: { type: String, required: true, unique },
+    godine: { type: String },
+    email: { type: String, required: true, unique: true },
     thumbnail: { type: String, required: true },
   },
   {
@@ -14,4 +14,4 @@ const eventModel = mongoose.Schema(
   }
 )
 
-module.exports = mongoose.model('Event', eventModel)
+module.exports = mongoose.model('Event', eventSchema)

@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 export const eventsSlice = createSlice({
   name: 'events',
@@ -22,9 +22,16 @@ export const eventsSlice = createSlice({
     },
     editujEvent: (state, action) => {
       const { payload } = action
-      state.value = state.value.map((event) => {
-        return event.id === payload.id ? { ...event, event: payload } : event
-      })
+      const event = state.value.find((ev) => ev.id === payload.id)
+      if (event) {
+        event.ime = payload.ime
+        event.email = payload.email
+        event.start = payload.start
+        event.end = payload.end
+        event.godine = payload.godine
+        event.thumbnail = payload.thumbnail
+        event.mobitel = payload.mobitel
+      }
     },
   },
   // extraReducers: (builder) => {},

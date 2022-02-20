@@ -62,19 +62,20 @@ const Tabela = () => {
 
   const handleEdit = (id) => {
     setEditItem(korisnici.find((korisnik) => korisnik.id === id))
+    // setEditItemRodendan(ko)
     dispatch(showModalForma(true))
     dispatch(isEditing(true))
   }
 
   return (
-    <div className='lg:px-10 mb-6'>
+    <div className='mb-6 lg:px-10'>
       <div className='flex items-center justify-between'>
-        <h2 className='mb-3 text-lg mx-3 lg:text-2xl font-bold text-center'>
+        <h2 className='mx-3 mb-3 text-lg font-bold text-center lg:text-2xl'>
           Rođendani u ovoj godini
         </h2>
         {korisnici.length > 0 && (
           <button
-            className='btn btn-sm lg:btn-md mb-3 mx-3 lg:mx-0'
+            className='mx-3 mb-3 btn btn-sm lg:btn-md lg:mx-0'
             onClick={() => dispatch(showModalForma(true))}
           >
             Dodaj
@@ -110,7 +111,7 @@ const Tabela = () => {
                   </td>
                   <td className='px-4'>{korisnik.ime}</td>
                   <td className='px-4'>{korisnik.email}</td>
-                  <td className='space-x-2 px-4'>
+                  <td className='px-4 space-x-2'>
                     <button
                       className='btn btn-info btn-sm'
                       onClick={() => handleEdit(korisnik.id)}
@@ -129,8 +130,8 @@ const Tabela = () => {
             </tbody>
           </table>
         ) : (
-          <div className='mb-6 flex items-center justify-center flex-col'>
-            <p className='text-center mb-2'>Nema korisnika za prikazati</p>
+          <div className='flex flex-col items-center justify-center mb-6'>
+            <p className='mb-2 text-center'>Nema korisnika za prikazati</p>
             <button
               className='btn'
               onClick={() => dispatch(showModalForma(true))}

@@ -16,9 +16,8 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
   const [rodendan, setRodendan] = useState(null)
   const [formData, setFormData] = useState({
     ime: '',
-    slika: 'https://i.pravatar.cc/300',
+    slika: '',
     email: '',
-    // rodendan: '',
   })
 
   const [mobitel, setMobitel] = useState()
@@ -27,10 +26,16 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
   const navigate = useNavigate()
   const editMode = useSelector((state) => state.event.editMode)
 
+  //Unos novog korisnika u formu za datum rođenja
   const godina = new Date().getFullYear() - new Date(rodendan).getFullYear()
-
   const startEnd = add(new Date(rodendan), { years: godina })
 
+  //Edit postojećeg korisnika u formu za datum rođenja
+  const godinaEdit =
+    new Date().getFullYear() - new Date(editItem.start).getFullYear()
+  const startEndEdit = add(new Date(editItem.start), { years: godinaEdit })
+
+  //On change za novog korisnika
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -38,6 +43,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
     }))
   }
 
+  //On change za edit korisnika
   const handleChangeEdit = (e) => {
     setEditItem((prev) => ({
       ...prev,
@@ -45,6 +51,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
     }))
   }
 
+  //Dodaj novog korisnika
   const handleSubmit = (e) => {
     e.preventDefault()
 
@@ -69,17 +76,20 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
         godine: godina,
         email: formData.email,
         thumbnail: formData.slika,
+        mobitel: formData.mobitel,
+        datumRodjenja: rodendan,
       })
     )
     if (modalForma === 'da') {
-      // dispatch(showModalForma(false))
-      // toast.success('Uspješno dodano!')
+      dispatch(showModalForma(false))
+      toast.success('Uspješno dodano!')
     } else {
-      // navigate('/kalendar')
+      navigate('/kalendar')
       console.log(startEnd)
     }
   }
 
+  //Edit postojećeg korisnika
   const handleSubmitEdit = (e) => {
     e.preventDefault()
 
@@ -103,17 +113,18 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
     dispatch(
       editujEvent({
         id: editItem.id,
-        start: editItem.startEnd,
-        end: editItem.startEnd,
+        start: startEndEdit,
+        end: startEndEdit,
         ime: editItem.ime,
         godine: editItem.godina,
         email: editItem.email,
-        thumbnail: editItem.slika,
+        thumbnail: editItem.thumbnail,
+        mobitel: editItem.mobitel,
       })
     )
     if (modalForma === 'da') {
-      dispatch(showModalForma(false))
       dispatch(isEditing(false))
+      dispatch(showModalForma(false))
       toast.success('Uspješno ispravljeno!')
     } else {
       navigate('/kalendar')
@@ -188,9 +199,13 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
             <Datepicker
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               name='rodendan'
-              placeholder='Upišite datum rođenja'
-              selected={editMode ? editItem.start : rodendan}
-              onChange={(date) => setRodendan(date)}
+              placeholderText='dan.mjesec.godina'
+              selected={editMode ? editItem.datumRodjenja : rodendan}
+              onChange={(date) =>
+                editMode
+                  ? setEditItem((prev) => ({ ...prev, datumRodjenja: date }))
+                  : setRodendan(date)
+              }
               maxDate={new Date()}
               showYearDropdown
               scrollableYearDropdown
