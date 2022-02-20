@@ -87,7 +87,6 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
         mobitel: formData.mobitel,
         rodendan: rodendan,
       })
-      console.log(rodendan)
     } catch (error) {
       console.log('greska', error)
     }
@@ -104,14 +103,16 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
     e.preventDefault()
 
     const godinaEdit =
-      new Date().getFullYear() - new Date(editItem.rodendan).getFullYear()
-    const startEndEdit = add(new Date(editItem.rodendan), { years: godinaEdit })
+      new Date().getFullYear() - new Date(editItem?.rodendan).getFullYear()
+    const startEndEdit = add(new Date(editItem?.rodendan), {
+      years: godinaEdit,
+    })
 
     if (
-      !editItem.email ||
-      !editItem.ime ||
-      !editItem.start ||
-      !editItem.thumbnail
+      !editItem?.email ||
+      !editItem?.ime ||
+      !editItem?.start ||
+      !editItem?.thumbnail
     ) {
       toast.error('Molimo popunite sva polja.')
       return
@@ -124,29 +125,16 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
 
     editItem.mobitel = mobitel
 
-    dispatch(
-      editujEvent({
-        id: editItem.id,
-        start: startEndEdit,
-        end: startEndEdit,
-        ime: editItem.ime,
-        godine: godinaEdit,
-        email: editItem.email,
-        thumbnail: editItem.thumbnail,
-        mobitel: editItem.mobitel,
-        rodendan: editItem.rodendan,
-      })
-    )
     await updateEvent({
-      id: editItem._id,
+      id: editItem?._id,
       start: startEndEdit,
       end: startEndEdit,
-      ime: editItem.ime,
+      ime: editItem?.ime,
       godine: godinaEdit,
-      email: editItem.email,
-      thumbnail: editItem.thumbnail,
-      mobitel: editItem.mobitel,
-      rodendan: editItem.rodendan,
+      email: editItem?.email,
+      thumbnail: editItem?.thumbnail,
+      mobitel: editItem?.mobitel,
+      rodendan: editItem?.rodendan,
     })
     if (modalForma === 'da') {
       dispatch(isEditing(false))
@@ -226,7 +214,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               name='rodendan'
               placeholderText='dan.mjesec.godina'
-              selected={editMode ? '' : rodendan}
+              selected={editMode ? null : rodendan}
               onChange={(date) =>
                 editMode
                   ? setEditItem((prev) => ({

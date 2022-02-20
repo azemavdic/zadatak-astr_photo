@@ -73,6 +73,7 @@ const Tabela = () => {
               {korisnici &&
                 korisnici?.events.map((korisnik, i) => (
                   <TabelaRow
+                    key={korisnik._id}
                     korisnik={korisnik}
                     i={i}
                     setEditItem={setEditItem}
