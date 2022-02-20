@@ -72,7 +72,7 @@ const Kalendar = () => {
     dispatch(showModal(true))
     try {
       const res = await fetch(
-        `https://api.nasa.gov/planetary/apod?api_key=${process.env.REACT_APP_NASA_API_KEY}&date=${date}`
+        `https://api.nasa.gov/planetary/apod?api_key=2GGURFTotwjhoP8PO7ZQ1cCHLA8f7EkPqix4kdMY&date=${date}`
       )
 
       const data = await res.json()
