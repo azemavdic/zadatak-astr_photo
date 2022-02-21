@@ -8,7 +8,7 @@ const getEvents = asyncHandler(async (req, res) => {
   try {
     const events = await Event.find({})
     if (!events) {
-      res.status(404).json({ poruka: 'Nema evenata.' })
+      res.status(404).json({ poruka: 'Nema korisnika.' })
       return
     }
     res.status(200).json({ events })
@@ -26,7 +26,7 @@ const addEvent = asyncHandler(async (req, res) => {
 
   //Validacija
   if (!ime || !email || !start || !thumbnail || !mobitel) {
-    res.status(400).json({ poruka: 'Molimo upišite sva polja' })
+    res.status(400).json({ poruka: 'Molimo popunite sva polja.' })
     return
   }
 
@@ -39,7 +39,7 @@ const addEvent = asyncHandler(async (req, res) => {
 
   const noviEvent = await Event.create(req.body)
   if (noviEvent) {
-    res.status(201).json({ poruka: 'Uspješno dodan event', noviEvent })
+    res.status(201).json({ poruka: 'Uspješno dodan korisnik.', noviEvent })
   } else {
     res.status(400).json({ poruka: 'Došlo je do greške.' })
     return
@@ -58,9 +58,9 @@ const izbrisiEvent = asyncHandler(async (req, res) => {
       return
     }
     await Event.findByIdAndDelete(id)
-    res.status(200).json({ poruka: `Uspješno obrisan korisnik ${event.ime}` })
+    res.status(200).json({ poruka: `${event.ime}` })
   } catch (error) {
-    res.status(401).json({ error })
+    res.status(401).json({ poruka: 'Došlo je do greške.' })
   }
 })
 
@@ -78,7 +78,9 @@ const updateEvent = asyncHandler(async (req, res) => {
     await Event.findByIdAndUpdate(id, req.body, { new: true })
     res.status(200).json({ poruka: `Uspješno editovan korisnik ${event.ime}` })
   } catch (error) {
-    res.status(401).json({ error })
+    res.status(401).json({
+      poruka: 'Došlo je do greške, ili korisnik već postoji sa tim emailom.',
+    })
   }
 })
 

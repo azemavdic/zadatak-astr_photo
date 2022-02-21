@@ -1,11 +1,11 @@
 import { useSelector, useDispatch } from 'react-redux'
-
 import { showModalForma } from '../features/modalSlice'
 import Modal from 'react-modal'
 import Forma from './Forma'
 import { useState } from 'react'
 import { useSviEventiQuery } from '../features/api'
 import TabelaRow from './TabelaRow'
+import Spinner from './Spinner'
 
 Modal.setAppElement('#root')
 
@@ -56,7 +56,6 @@ const Tabela = () => {
         )}
       </div>
       <div className='overflow-x-auto'>
-        {loadingEvents && 'Loading...'}
         {korisnici && korisnici?.events.length > 0 ? (
           <table className='w-full'>
             <thead className='border-b-2'>
@@ -81,6 +80,8 @@ const Tabela = () => {
                 ))}
             </tbody>
           </table>
+        ) : loadingEvents ? (
+          <Spinner />
         ) : (
           <div className='flex flex-col items-center justify-center mb-6'>
             <p className='mb-2 text-center'>Nema korisnika za prikazati</p>

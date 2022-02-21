@@ -26,9 +26,8 @@ const TabelaRow = ({ korisnik, i, setEditItem }) => {
       customClass: { htmlContainer: 'grid-row:1' },
     })
     if (confirm.isConfirmed) {
-      Swal.fire('Korisnik obrisan!', '', 'success')
-      // dispatch(izbrisiEvent(id))
-      await izbrisiKorisnika({ id })
+      Swal.fire(`Korisnik je obrisan.`, '', 'success')
+      await izbrisiKorisnika({ id }).unwrap()
     } else {
       Swal.fire('Korisnik nije obrisan.', '', 'info')
     }

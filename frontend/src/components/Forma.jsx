@@ -53,8 +53,8 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
     }))
   }
 
-  const [dodajEvent] = useDodajEventMutation()
-  const [updateEvent] = useEditEventMutation({
+  const [dodajEvent, { isLoading: isLoadingDodaj }] = useDodajEventMutation()
+  const [updateEvent, { isLoading: isLoadingUpdate }] = useEditEventMutation({
     fixedCacheKey: 'shared-update-post',
   })
 
@@ -80,27 +80,28 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
       return
     }
 
-    try {
-      // RTK dodavanje u bazu podataka
-      await dodajEvent({
-        start: startEnd,
-        end: startEnd,
-        ime: formData.ime,
-        godine: godina,
-        email: formData.email,
-        thumbnail: formData.slika,
-        mobitel: formData.mobitel,
-        rodendan: rodendan,
+    // RTK dodavanje u bazu podataka
+    dodajEvent({
+      start: startEnd,
+      end: startEnd,
+      ime: formData.ime,
+      godine: godina,
+      email: formData.email,
+      thumbnail: formData.slika,
+      mobitel: formData.mobitel,
+      rodendan: rodendan,
+    })
+      .unwrap()
+      .then((payload) => {
+        toast.success(payload.poruka)
+        if (modalForma === 'da') {
+          dispatch(showModalForma(false))
+        } else {
+          navigate('/kalendar')
+          dispatch(showModalForma(false))
+        }
       })
-    } catch (error) {
-      console.log('greska', error)
-    }
-    if (modalForma === 'da') {
-      dispatch(showModalForma(false))
-      toast.success('Uspješno dodano!')
-    } else {
-      navigate('/kalendar')
-    }
+      .catch((error) => toast.error(error.data.poruka))
   }
 
   //Edit postojećeg korisnika
@@ -141,13 +142,18 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
       mobitel: editItem?.mobitel,
       rodendan: editItem?.rodendan,
     })
-    if (modalForma === 'da') {
-      dispatch(isEditing(false))
-      dispatch(showModalForma(false))
-      toast.success('Uspješno ispravljeno!')
-    } else {
-      navigate('/kalendar')
-    }
+      .unwrap()
+      .then((payload) => {
+        toast.success(payload.poruka)
+        if (modalForma === 'da') {
+          dispatch(showModalForma(false))
+          dispatch(isEditing(false))
+        } else {
+          navigate('/kalendar')
+          dispatch(showModalForma(false))
+        }
+      })
+      .catch((error) => toast.error(error.data.poruka))
   }
 
   const handleCloseModal = () => {
@@ -265,7 +271,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
             <button
               className='px-4 py-1 font-light tracking-wider text-white bg-gray-900 rounded btn-block disabled:loading btn disabled:bg-gray-200 hover:bg-gray-800'
               type='submit'
-              // disabled={loading}
+              disabled={editMode ? isLoadingUpdate : isLoadingDodaj}
             >
               {editMode ? 'Edituj' : 'Potvrdi'}
             </button>
