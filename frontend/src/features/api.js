@@ -3,7 +3,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const eventApi = createApi({
   reducerPath: 'eventApi',
   tagTypes: ['Events'],
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://asko-astron-photo.herokuapp.com/api/',
+  }),
   endpoints: (builder) => ({
     sviEventi: builder.query({
       query: () => `events`,
