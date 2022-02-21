@@ -4,13 +4,18 @@ import { toast } from 'react-toastify'
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
 import { useDispatch, useSelector } from 'react-redux'
-import { editujEvent, isEditing } from '../features/eventsSlice'
+import { isEditing } from '../features/eventsSlice'
 import { add } from 'date-fns'
 import { showModalForma } from '../features/modalSlice'
 import { format } from 'date-fns'
 import Datepicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useDodajEventMutation, useEditEventMutation } from '../features/api'
+import { AiOutlineUser } from 'react-icons/ai'
+import { IoImageOutline } from 'react-icons/io5'
+import { HiOutlineMail } from 'react-icons/hi'
+import { BsCalendar2Date } from 'react-icons/bs'
+import moment from 'moment'
 
 const Forma = ({ modalForma, editItem, setEditItem }) => {
   const [rodendan, setRodendan] = useState(null)
@@ -173,62 +178,76 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
             <label className='block text-sm text-white' htmlFor='ime'>
               Ime
             </label>
-            <input
-              className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
-              type='text'
-              name='ime'
-              placeholder='Upišite ime'
-              value={editMode ? editItem?.ime : formData.ime}
-              onChange={editMode ? handleChangeEdit : handleChange}
-            />
+            <div className='flex items-center w-full bg-gray-300 border rounded'>
+              <AiOutlineUser size={25} className='mx-3' />
+              <input
+                className='w-full px-5 py-1 text-gray-700 bg-gray-300 border-none focus:outline-none focus:bg-white'
+                type='text'
+                name='ime'
+                placeholder='Upišite ime'
+                value={editMode ? editItem.ime : formData.ime}
+                onChange={editMode ? handleChangeEdit : handleChange}
+              />
+            </div>
           </div>
           <div className='mt-2'>
             <label className='block text-sm text-white'>Slika</label>
-            <input
-              className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
-              type='url'
-              id='slika'
-              name='slika'
-              placeholder='Upišite url profilne slike'
-              value={editMode ? editItem?.thumbnail : formData.slika}
-              onChange={editMode ? handleChangeEdit : handleChange}
-            />
+            <div className='flex items-center w-full bg-gray-300 border rounded'>
+              <IoImageOutline size={25} className='mx-3' />
+              <input
+                className='w-full px-5 py-1 text-gray-700 bg-gray-300 focus:outline-none focus:bg-white'
+                type='url'
+                id='slika'
+                name='slika'
+                placeholder='Upišite url profilne slike'
+                value={editMode ? editItem.thumbnail : formData.slika}
+                onChange={editMode ? handleChangeEdit : handleChange}
+              />
+            </div>
           </div>
 
           <div className='mt-2'>
             <label className='block text-sm text-white'>Email</label>
-            <input
-              className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
-              type='email'
-              id='email'
-              name='email'
-              placeholder='Upišite email'
-              value={editMode ? editItem?.email : formData.email}
-              onChange={editMode ? handleChangeEdit : handleChange}
-            />
+            <div className='flex items-center w-full bg-gray-300 border rounded'>
+              <HiOutlineMail size={25} className='mx-3' />
+              <input
+                className='w-full px-5 py-1 text-gray-700 bg-gray-300 focus:outline-none focus:bg-white'
+                type='email'
+                id='email'
+                name='email'
+                placeholder='Upišite email'
+                value={editMode ? editItem.email : formData.email}
+                onChange={editMode ? handleChangeEdit : handleChange}
+              />
+            </div>
           </div>
 
           <div className='mt-2'>
             <label className='block text-sm text-white'>Datum rođenja</label>
-            <Datepicker
-              className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
-              name='rodendan'
-              placeholderText='dan.mjesec.godina'
-              selected={editMode ? null : rodendan}
-              onChange={(date) =>
-                editMode
-                  ? setEditItem((prev) => ({
-                      ...prev,
-                      rodendan: date,
-                      start: date,
-                    }))
-                  : setRodendan(date)
-              }
-              maxDate={new Date()}
-              showYearDropdown
-              scrollableYearDropdown
-              dateFormat='dd.MM.yyyy'
-            />
+            <div className='flex items-center w-full bg-gray-300 border rounded'>
+              <BsCalendar2Date size={25} className='mx-3' />
+              <Datepicker
+                className='w-full px-5 py-1 text-gray-700 bg-gray-300 focus:outline-none focus:bg-white'
+                name='rodendan'
+                placeholderText='dan.mjesec.godina'
+                selected={
+                  editMode ? moment(editItem?.rodendan).toDate() : rodendan
+                }
+                onChange={(date) =>
+                  editMode
+                    ? setEditItem((prev) => ({
+                        ...prev,
+                        rodendan: date,
+                        start: date,
+                      }))
+                    : setRodendan(date)
+                }
+                maxDate={new Date()}
+                showYearDropdown
+                scrollableYearDropdown
+                dateFormat='dd.MM.yyyy'
+              />
+            </div>
           </div>
 
           <div className='mt-2'>
@@ -237,7 +256,7 @@ const Forma = ({ modalForma, editItem, setEditItem }) => {
               defaultCountry='BA'
               className='w-full px-5 py-1 text-gray-700 bg-gray-300 rounded focus:outline-none focus:bg-white'
               placeholder='Upišite broj mobitela'
-              value={editMode ? editItem?.mobitel : mobitel}
+              value={editMode ? editItem.mobitel : mobitel}
               onChange={setMobitel}
             />
           </div>

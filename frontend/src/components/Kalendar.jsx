@@ -66,7 +66,7 @@ const Kalendar = () => {
     const currentDate = format(new Date(), 'yyyy-MM-dd')
     if (date > currentDate) {
       const oduzetaGodina = sub(e.start, { years: 1 })
-      date = format(oduzetaGodina, 'yyyy-MM-dd')
+      date = format(new Date(oduzetaGodina), 'yyyy-MM-dd')
     } else {
       date = format(new Date(e.start), 'yyyy-MM-dd')
     }
