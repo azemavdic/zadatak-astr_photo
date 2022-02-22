@@ -57,7 +57,7 @@ const Tabela = () => {
       </div>
       <div className='overflow-x-auto'>
         {korisnici && korisnici?.events.length > 0 ? (
-          <table className='w-full'>
+          <table className='w-full mb-8'>
             <thead className='border-b-2'>
               <tr>
                 <th>RB</th>
@@ -83,7 +83,7 @@ const Tabela = () => {
         ) : loadingEvents ? (
           <Spinner />
         ) : (
-          <div className='flex flex-col items-center justify-center mb-6'>
+          <div className='flex flex-col items-center justify-center mb-10'>
             <p className='mb-2 text-center'>Nema korisnika za prikazati</p>
             <button
               className='btn'

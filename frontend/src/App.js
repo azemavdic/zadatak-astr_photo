@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import KalendarPage from './pages/KalendarPage'
 import 'react-toastify/dist/ReactToastify.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import Layout from './components/Layout'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path='/kalendar' element={<KalendarPage />} />
         </Routes>
         <ToastContainer />
+        <Layout />
       </Router>
     </Provider>
   )
